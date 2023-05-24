@@ -203,13 +203,13 @@ p <- DimPlot(mentral_10x, group.by = "cell_type")
 ggsave("./preanalysis10x/UMAP_cell_type_primality_0.8.png", p, width = 8, height = 6)
 p <- DimPlot(mentral_10x, group.by = "phase")
 ggsave("./preanalysis10x/UMAP_phase_primality_0.8.png", p, width = 8, height = 6)
-p <- DimPlot(mentral_10x, group.by = "seurat_clusters")
+p <- DimPlot(mentral_10x, group.by = "seurat_clusters",label = T)
 ggsave("./preanalysis10x/UMAP_seurat_clusters_primality_0.8.png", p, width = 8, height = 6)
 p <- DimPlot(mentral_10x, group.by = "donor", split.by = "donor", ncol = 4)
 ggsave("./preanalysis10x/UMAP_donor_primality_split_0.8.png", p, width = 18, height = 12)
 save(mentral_10x,file = 'mentral_10x_after_harmony.Rdata')
 
-###########################################################################################
+#########################################################################################################################
 # Find HVG and cluster
 library(dplyr)
 library(Seurat)
@@ -220,26 +220,25 @@ library(patchwork)
 library(stringr)
 rm(list=ls())
 options(stringsAsFactors = F)
-mentral_10x.markers <- FindAllMarkers(object = mentral_10x,assay = "SCT", only.pos = TRUE, min.pct = 0.25,thresh.use = 0.25)
-# wriet to decidual/HVGmarkers_res_0.5
-write.csv(mentral_10x.markers,file=paste0("./preanalysis10x",'/HVGmarkers_res_0.8.csv'))
-save(mentral_10x,mentral_10x.markers,file = 'mentral_10x_HVG.Rdata')
+menstrual_10x.markers <- FindAllMarkers(object = menstrual_10x,assay = "SCT", only.pos = TRUE, min.pct = 0.25,thresh.use = 0.25)
+# wriet to ./HVGmarkers_res_0.8
+write.csv(menstrual_10x.markers,file=paste0("./preanalysis10x",'/HVGmarkers_res_0.8.csv'))
+save(menstrual_10x,menstrual_10x.markers,file = 'menstrual_10x_HVG.Rdata')
 
 library(dplyr) 
 p<-DimHeatmap(object = mentral_10x,dims = 1:15)
-ggsave(p,filename=paste0("preanalysis10x",'/mentral_10x_dimheatmap.pdf'),width = 24,height = 18)
-top10 <- mentral_10x.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
-p <- DoHeatmap(mentral_10x,top10$gene,size=3)
+ggsave(p,filename=paste0("preanalysis10x",'/menstrual_10x_dimheatmap.pdf'),width = 24,height = 18)
+top10 <- menstrual_10x.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
+p <- DoHeatmap(menstrual_10x,top10$gene,size=3)
 ggsave(p,filename=paste0("preanalysis10x",'/top10_heatmap.png'),width = 24,height = 18)
 # Specify genes  - Mac
 genes_to_check = c( "FCN1","MS4A7","CD14")
 # featureplot
-p <- FeaturePlot(mentral_10x, features = genes_to_check)
+p <- FeaturePlot(menstrual_10x, features = genes_to_check)
 ggsave(p,filename=paste0("preanalysis10x",'/fearureplot_sepcify_mac.png'),width = 16,height = 10)
 # All on Dotplot 
-p <- DotPlot(mentral_10x, features = genes_to_check) + coord_flip()
-ggsave(p,filename=paste0("preanalysis10x",'/dotplot_sepcify_specific_MAC.pdf'),width = 16,height = 12)
-# 13 macrophage
+p <- DotPlot(menstrual_10x, features = genes_to_check) + coord_flip()
+ggsave(p,filename=paste0("preanalysis10x",'/dotplot_sepcify_specific_mac.pdf'),width = 16,height = 12)
 
 
 #################################################################################################
@@ -253,12 +252,14 @@ ggsave(p,filename=paste0("preanalysis10x",'/dotplot_sepcify_specific_MAC.pdf'),w
 # Lymphocyte PTPRC CCL5 STK17B
 # Macropage LYZ IL1B CD14 HLA-DQA1 MSA4A6A AIF1
 # Smooth muscle cell ACTA2 MCAM BGN NOTCH3 GUCY1A2 RGS5
-genes_to_check = c("ADGRL4","COL5A1","LUM","COL6A3","CRISPLD2","COL6A1",  # Stromal fibroblast
-                   "TACSTD2","UCA1","SDC4","KLF5","WFDC2","EPCAM",        # Unciliated epithelium
-                   "FOXJ1","","DYNLRB2","SNTN","C9orf24","CDHR3","DYDC2", # Ciliated epithelium
-                   "PTPRC","CCL5","STK17B",                               # Lymphocyte
-                   "LYZ","IL1B","CD14","HLA-DQA1","MSA4A6A","AIF1",       # Macrophage
-                   "ACTA2","MCAM","BGN","NOTCH3","GUCY1A2","RGS5"         # Smooth muscle cell
+genes_to_check = c("COL5A1","LUM","COL6A3","CRISPLD2","COL6A1",                          # Stromal fibroblast
+                   "TACSTD2","UCA1","SDC4","KLF5","WFDC2","EPCAM","CLDN1","KRT8",        # Unciliated epithelium
+                   "FOXJ1","DYNLRB2","SNTN","C9orf24","CDHR3","DYDC2",                   # Ciliated epithelium
+                   "PTPRC","CCL5","STK17B",                                              # Lymphocyte
+                   "LYZ","IL1B","CD14","HLA-DQA1","MS4A7","AIF1",                        # Macrophage
+                   "ACTA2","BGN","NOTCH3","GUCY1A2","RGS5",                              # Smooth muscle cell
+                   "MCAM","ZEB1", "VIM","FN1",                                           # Mesenchymal
+                   "ADGRL4","PECAM1","VWF"                                               # Endothelium
                    )
 # featureplot
 p <- FeaturePlot(mentral_10x, features = genes_to_check)
@@ -276,7 +277,8 @@ celltype[celltype$ClusterID %in% c(1,2,3,5,7,8,10,11,12,16,18,21,24,25),2]='Unci
 celltype[celltype$ClusterID %in% c(9,17),2]='Ciliated epithelium'
 celltype[celltype$ClusterID %in% c(8,10),2]='Lymphocyte'
 celltype[celltype$ClusterID %in% c(23),2]='Macrophage'
-celltype[celltype$ClusterID %in% c(15),2]='Smooth muscle cell'
+celltype[celltype$ClusterID %in% c(15),2]='Smooth muscle'
+celltype[celltype$ClusterID %in% c(13),2]='Endothelia' 
 
 
 head(celltype)
@@ -286,10 +288,19 @@ table(celltype$celltype)
 new.cluster.ids <- celltype$celltype
 names(new.cluster.ids) <- levels(mentral_10x)
 mentral_10x <- RenameIdents(mentral_10x, new.cluster.ids)
-save(mentral_10x,file = 'mentral_10x_after_cluster.Rdata')
+table(mentral_10x@active.ident)
+# Stromal fibroblast Unciliated epithelium            Lymphocyte   Ciliated epithelium            Endothelia         Smooth muscle 
+# 21670                 32925                  5106                  3512                  1847                  1226 
+# Macrophage 
+# 444
+dim(mentral_10x)
+# > dim(mentral_10x)
+# [1] 26780 66730
+menstrual_10x <- mentral_10x
+save(menstrual_10x,file = 'menstrual_10x_after_cluster.Rdata')
 # legend
 p<-DimPlot(mentral_10x, reduction = "umap", label = TRUE, pt.size = 0.5) 
-ggsave(p,filename=paste0("preanalysis10x",'/umap_firstcluster.png'),width = 16,height = 12)
+ggsave(p,filename=paste0("preanalysis10x",'/umap_firstcluster.png'),width = 8,height = 6)
 
 # percentage - donor
 sample_table <- as.data.frame(table(mentral_10x@meta.data$donor,mentral_10x@active.ident))
@@ -334,3 +345,38 @@ plot_sample<-ggplot(sample_table,aes(x=Phase,weight=CellNumber,fill=celltype))+
   )+labs(y="Percentage")+RotatedAxis()
 ggsave(plot_sample,filename=paste0("preanalysis10x",'/percentage_phase_ctype.png'),width = 6,height = 8)
 
+###########################################################################################
+# cowplot for dotplot
+library(Seurat) # dotplot
+library(cowplot) # plot_grid
+markers = c("COL5A1","LUM","COL6A3","CRISPLD2","COL6A1",                                 # Stromal fibroblast
+                   "TACSTD2","UCA1","SDC4","KLF5","WFDC2","EPCAM","CLDN1","KRT8",        # Unciliated epithelium
+                   "FOXJ1","DYNLRB2","SNTN","C9orf24","CDHR3","DYDC2",                   # Ciliated epithelium
+                   "PTPRC","CCL5","STK17B",                                              # Lymphocyte
+                   "LYZ","IL1B","CD14","HLA-DQA1","MS4A7","AIF1",                        # Macrophage
+                   "ACTA2","BGN","NOTCH3","GUCY1A2","RGS5",                              # Smooth muscle cell
+                   "ADGRL4","PECAM1","VWF"                                               # Endothelium
+)
+ctype <- c(rep("Stromal fibroblast",5),
+           rep("Unciliated epithelium",8),
+           rep("Ciliated epithelium",6),
+           rep("Lymphocyte",3),
+           rep("Macrophage",6),
+           rep("Smooth muscle",5),
+           rep("Endothelia",3))
+gene_marker <- cbind(markers,ctype)
+names(gene_marker)<-c("gene","ctype") 
+gene_marker<-data.frame(gene=markers,ctype=ctype)
+p1 <- DotPlot(menstrual_10x,
+              features = split(gene_marker$gene, gene_marker$ctype),
+              cols = c("#ffffff", "#448444")
+) +
+  RotatedAxis() + # 来自Seurat
+  theme_bw()+
+  theme(
+    panel.border = element_rect(color = "black"),
+    panel.spacing = unit(1, "mm"),
+    axis.title = element_blank(),
+    axis.text.x=element_text(angle = 90)
+  );p1
+ggsave(p1,filename=paste0("preanalysis10x",'/dotplot_ctype_split.png'),width = 16,height = 12)        
